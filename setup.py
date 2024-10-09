@@ -2,8 +2,9 @@ from setuptools import find_packages, setup
 
 setup(
     name="swarmbase-cli",
-    version="0.1.3",
+    version="0.1.4",
     packages=find_packages(),
+    py_modules=['cli'],  # Include cli.py as a standalone module
     install_requires=[
         "click",
         "requests",
