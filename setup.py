@@ -11,7 +11,7 @@ setup(
     ],
     entry_points="""
         [console_scripts]
-        swarm=swarmcli.utils:cli
+        swarm=cli:cli
     """,
     url="https://github.com/Go-Pomegranate/swarmbase-cli",  # Zaktualizuj ten URL
     author="swarmbase.ai",
