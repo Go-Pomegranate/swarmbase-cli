@@ -7,6 +7,7 @@ setup(
     install_requires=[
         "click",
         "requests",
+        "pydantic",
     ],
     entry_points="""
         [console_scripts]
