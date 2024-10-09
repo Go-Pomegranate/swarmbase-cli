@@ -1,0 +1,7 @@
+flask
+pytest
+click
+sqlalchemy
+pydantic
+flask-cors
+wheel
