@@ -4,10 +4,20 @@ from typing import Any, Dict, Optional
 
 from swarmybasecore.framework_builder import CreatorFactory
 
-from swarmcli.utils import RelationshipType
+from swarmybasecore.utils import RelationshipType
 
-from .builders import AgentBuilder, FrameworkBuilder, SwarmBuilder, ToolBuilder
-from .clients import AgentClient, FrameworkClient, SwarmClient, ToolClient
+from swarmybasecore.builders import (
+    AgentBuilder,
+    FrameworkBuilder,
+    SwarmBuilder,
+    ToolBuilder,
+)
+from swarmybasecore.clients import (
+    AgentClient,
+    FrameworkClient,
+    SwarmClient,
+    ToolClient,
+)
 
 
 class SwarmCLI:

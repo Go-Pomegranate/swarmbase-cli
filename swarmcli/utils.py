@@ -8,9 +8,8 @@ from json import JSONDecodeError
 from pathlib import Path
 from re import sub
 from typing import NamedTuple
-
-import click
 import requests
+import click
 
 CONFIG_FILE = Path.expanduser(Path("~/.swarm_cli_config.json"))
 
@@ -55,23 +54,6 @@ def cli(ctx: click.Context, base_url: str, debug: bool) -> None:
 
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
-
-
-def make_request(method, url, headers=None, data=None, params=None):
-    headers = headers or {"Content-Type": "application/json"}
-    response = requests.request(
-        method,
-        url,
-        headers=headers,
-        json=data,
-        params=params,
-    )
-    response.raise_for_status()
-    if response.content:
-        response.raise_for_status()
-        json_data = response.json()
-        return json_data
-    return None
 
 
 def debug_logging(func):
