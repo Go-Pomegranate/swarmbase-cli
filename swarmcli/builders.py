@@ -1,13 +1,23 @@
 """Swarm CLI builders."""
 
+import keyword
+import re
 from dataclasses import asdict, field
 from datetime import datetime
-from typing import Any, ClassVar, Dict, Generic, List, NamedTuple, Optional, TypeVar
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+)
 
 from pydantic import ConfigDict, field_validator
 from pydantic.dataclasses import dataclass
 
-from .utils import RelationshipType
+from .agency_chart import AgencyChart
 from .clients import (
     AgentClient,
     BaseClient,
@@ -15,20 +25,21 @@ from .clients import (
     SwarmClient,
     ToolClient,
 )
-import re
-import keyword
+from .utils import RelationshipType, AgentRelationship, pascal_case, snake_case
 
 
+# %%
 @dataclass
 class Product:
     id: Optional[str] = None
     _name: str = field(init=False)
+    count: ClassVar[int] = 0
     extra_attributes: Dict[str, Any] = field(default_factory=dict)
 
     @field_validator("_name")
     def validate_variable_name(cls, v: str) -> str:
         """Validate whether _name can be used as a valid Python identifier."""
-        if not re.match(r"^[a-zA-Z_]\w*$", v):
+        if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_ ]*$", v):
             raise ValueError("Provided name is not a valid Python identifier.")
         if keyword.iskeyword(v):
             raise ValueError("Provided name is a reserved keyword in Python.")
@@ -38,6 +49,14 @@ class Product:
     @property
     def name(self):
         return self._name
+
+    @property
+    def instance_name(self) -> str:
+        return (
+            snake_case(self.name)
+            if self.name
+            else snake_case(f"{self.__class__.__name__}{Product.count}")
+        )
 
     @name.setter
     def name(self, value: str) -> None:
@@ -51,7 +70,9 @@ T = TypeVar("T", bound="Product")
 
 
 @dataclass(
-    config=ConfigDict(arbitrary_types_allowed=True, revalidate_instances="always"),
+    config=ConfigDict(
+        arbitrary_types_allowed=True, revalidate_instances="always"
+    ),
 )
 class BaseBuilder(Generic[T]):
     client: BaseClient
@@ -59,6 +80,9 @@ class BaseBuilder(Generic[T]):
     _product: T = field(init=False)
 
     def __post_init__(self):
+        self.reset()
+
+    def reset(self) -> None:
         self._product = self._product_type()
 
     def set_id(self, id: str):
@@ -78,30 +102,28 @@ class BaseBuilder(Generic[T]):
 
     @property
     def product(self) -> T:
-        return self._product
+        product = self._product
+        self.reset()
+        return product
 
 
 @dataclass
 class Tool(Product):
-    tool_count: ClassVar[int] = 0
     description: Optional[str] = None
     version: Optional[str] = None
     code: Optional[str] = None
 
     def __post_init__(self):
-        Tool.tool_count += 1
+        Tool.count += 1
+        super().__post_init__()
 
-    def as_string(self):
-        "Tool representation as BaseTool from agency swarm."
-        tool_description = f'"""{self.description}"""' if self.description else ""
-        tool_name = (
-            self.name if (self.name or self.name == "") else f"Tool{Tool.tool_count}"
+    @property
+    def class_name(self):
+        return (
+            pascal_case(self.name)
+            if (self.name or self.name == "")
+            else f"Tool{Tool.count}"
         )
-        tool_class = f"""class {tool_name}(BaseTool):
-    {tool_description}
-    {self.code}
-        """
-        return tool_class
 
 
 @dataclass
@@ -125,55 +147,45 @@ class ToolBuilder(BaseBuilder[Tool]):
         data = self.client.get(id)
         if data:
             self.set_id(data.get("id"))
+            self.set_name(data.get("name"))
             self.set_description(data.get("description"))
 
             self.set_extra_attributes(data.get("extra_attributes"))
-            newest_code_data = sorted(
-                data["code_versions"],
-                key=lambda item: datetime.strptime(
-                    item["created_at"], "%Y-%m-%dT%H:%M:%S.%f"
-                ),
-            )[0]
+            newest_code_data = (
+                sorted(
+                    data["code_versions"],
+                    key=lambda item: datetime.strptime(
+                        item["created_at"],
+                        "%Y-%m-%dT%H:%M:%S.%f",
+                    ),
+                )[0]
+                if data["code_versions"]
+                else {}
+            )
             self.set_version(newest_code_data.get("version"))
             self.set_code(newest_code_data.get("code"))
         return self
 
 
-class AgentRelationship(NamedTuple):
-    relationship_type: RelationshipType
-    source_agent_id: str
-    target_agent_id: str
-
-
 @dataclass
 class Agent(Product):
-    agent_count: ClassVar[int] = 0
     description: Optional[str] = None
     instuctions: Optional[str] = None
     relationships: List[AgentRelationship] = field(default_factory=list)
     tools: List[Tool] = field(default_factory=list)
 
     def __post_init__(self):
-        Agent.agent_count += 1
-
-    def as_string(self):
-        """Agent representation as agent from agency swarm."""
-        agent_description = f'"""{self.description}"""' if self.description else ""
-        agent_name = self.name if self.name else f"agent{Agent.agent_count}"
-        agent_instructions = self.instuctions if self.instuctions else f""
-        agent_class = f"""{agent_name} = Agent(
-        name={agent_name},
-        description="{agent_description}",
-        instuctions=\"\"\"{agent_instructions}\"\"\",
-        tools={[tool.name for tool in self.tools]}
-        model="{[self.extra_attributes.get("model", "gpt-4o")]}"
-        """
-        return agent_class
+        Agent.count += 1
+        super().__post_init__()
 
 
 @dataclass
 class AgentBuilder(BaseBuilder[Agent]):
     client: AgentClient
+
+    def __post_init__(self):
+        self._product_type = Agent
+        super().__post_init__()
 
     def set_description(self, description: str):
         self._product.description = description
@@ -197,6 +209,7 @@ class AgentBuilder(BaseBuilder[Agent]):
 
         if data:
             self.set_id(data.get("id"))
+            self.set_name(data.get("name"))
             self.set_description(data.get("description"))
             self.set_instructions(data.get("instructions"))
             self.set_extra_attributes(data.get("extra_attributes"))
@@ -204,8 +217,8 @@ class AgentBuilder(BaseBuilder[Agent]):
             for _ in data.get("relationships"):
                 relationship = AgentRelationship(
                     RelationshipType(_["relationship_type"]),
-                    _.get["source_agent_id"],
-                    _.get["target_agent_id"],
+                    _.get("source_agent_id"),
+                    _.get("target_agent_id"),
                 )
                 self.add_relationship(relationship)
 
@@ -217,7 +230,8 @@ class AgentBuilder(BaseBuilder[Agent]):
 
 @dataclass
 class Framework(Product):
-    pass
+    def __post_init__(self):
+        super().__post_init__()
 
 
 @dataclass
@@ -225,19 +239,44 @@ class FrameworkBuilder(BaseBuilder[Framework]):
     client: FrameworkClient
     _product: Framework
 
+    def __post_init__(self):
+        self._product_type = Framework
+        super().__post_init__()
+
 
 @dataclass
 class Swarm(Product):
     parent_id: Optional[str] = None
-    agents: List[Agent] = field(default_factory=list)
+    agents: Dict[str, Agent] = field(default_factory=dict)
+    tools: Dict[str, Tool] = field(default_factory=dict)
+    agency_chart = AgencyChart()
+
+    def __post_init__(self):
+        super().__post_init__()
 
 
 @dataclass
 class SwarmBuilder(BaseBuilder[Swarm]):
     client: SwarmClient
 
+    def __post_init__(self):
+        self._product_type = Swarm
+        super().__post_init__()
+
     def add_agent(self, agent: Agent):
-        self._product.agents.append(agent)
+
+        if agent.id:
+            self._product.agents[agent.id] = agent
+
+        return self
+
+    def add_agents_relationship(self, relationship: AgentRelationship):
+        self._product.agency_chart.add_relationship(relationship)
+        return self
+
+    def add_tool(self, tool: Tool):
+        if tool.id:
+            self._product.tools[tool.id] = tool
         return self
 
     def from_id(self, id: str):
@@ -249,8 +288,16 @@ class SwarmBuilder(BaseBuilder[Swarm]):
             agent_builder = AgentBuilder(AgentClient(self.client.base_url))
 
             for agent_data in data.get("agents"):
-                agent: Agent = agent_builder.from_id(agent_data.get("id")).product
+                agent: Agent = agent_builder.from_id(
+                    agent_data.get("id")
+                ).product
+
                 self.add_agent(agent)
+                for rel in agent.relationships:
+                    self.add_agents_relationship(rel)
+
+                for tool in agent.tools:
+                    self.add_tool(tool)
 
             self.set_extra_attributes(data.get("extra_attributes"))
 

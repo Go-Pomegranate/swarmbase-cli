@@ -1,4 +1,8 @@
+import concurrent.futures
+from pathlib import Path
 from typing import Any, Dict, Optional
+
+from swarmybasecore.framework_builder import CreatorFactory
 
 from swarmcli.utils import RelationshipType
 
@@ -100,7 +104,10 @@ class SwarmCLI:
         return self.framework_client.get(framework_id)
 
     def update_framework(
-        self, framework_id: str, name: str, description: Optional[str] = None
+        self,
+        framework_id: str,
+        name: str,
+        description: Optional[str] = None,
     ):
         data = {"name": name, "description": description}
         return self.framework_client.update(framework_id, data)
@@ -139,9 +146,39 @@ class SwarmCLI:
     def get_swarm(self, swarm_id: str):
         return self.swarm_client.get(swarm_id)
 
-    def update_swarm(self, swarm_id: str, name: str, description: Optional[str] = None):
+    def update_swarm(
+        self, swarm_id: str, name: str, description: Optional[str] = None
+    ):
         data = {"name": name, "description": description}
         return self.swarm_client.update(swarm_id, data)
+
+    def export_swarm(
+        self,
+        swarm_id: str,
+        framework_name: str,
+        base_path: str = "./",
+        requirements_file: Optional[str] = None,
+    ):
+        swarm = self.swarm_builder().from_id(swarm_id).product
+
+        framework_creator = CreatorFactory.get_creator(framework_name)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            tasks = [
+                executor.submit(
+                    framework_creator.create_swarm_files,
+                    swarm,
+                    Path(base_path),
+                ),
+                executor.submit(
+                    framework_creator.setup_virtualenv,
+                    swarm.instance_name,
+                    requirements_file,
+                ),
+            ]
+        return [
+            task.result() for task in concurrent.futures.as_completed(tasks)
+        ]
 
     def delete_swarm(self, swarm_id: str):
         return self.swarm_client.delete(swarm_id)
@@ -172,7 +209,7 @@ class SwarmCLI:
     def update_tool(
         self,
         tool_id: str,
-        name: str,
+        name: Optional[str] = None,
         description: Optional[str] = None,
         version: Optional[str] = None,
         code: Optional[str] = None,

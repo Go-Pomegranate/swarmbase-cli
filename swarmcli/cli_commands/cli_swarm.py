@@ -1,4 +1,3 @@
-
 import click
 
 from swarmcli.facade import SwarmCLI
@@ -102,4 +101,34 @@ def delete(ctx, swarm_id):
 
     swarm_cli = SwarmCLI(ctx.obj["base_url"])
     response = swarm_cli.delete_swarm(swarm_id)
+    click.echo(response)
+
+
+@swarm.command()
+@click.argument("swarm_id")
+@click.option("--framework_name", help="Name of the framework", required=False)
+@click.option("--base_path", required=False)
+@click.option("--requirements_file", required=False)
+@click.option("--debug", is_flag=True, help="Enable debug logging")
+@click.pass_context
+@debug_logging
+@handle_exceptions
+def export(ctx, swarm_id, framework_name, base_path, requirements_file):
+    """Export swarm"""
+    logger = ctx.obj["logger"]
+    logger.debug(f"Exporting swarm with ID: {swarm_id}")
+
+    if framework_name is None:
+        framework_name = "swarmybasecore"
+    data = {
+        "swarm_id": swarm_id,
+        "framework_name": framework_name,
+        "base_path": base_path,
+        "requirements_file": requirements_file,
+    }
+
+    data = {k: v for k, v in data.items() if v is not None}
+
+    swarm_cli = SwarmCLI(ctx.obj["base_url"])
+    response = swarm_cli.export_swarm(**data)
     click.echo(response)

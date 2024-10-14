@@ -1,4 +1,3 @@
-
 import click
 
 from swarmcli.facade import SwarmCLI
@@ -82,21 +81,33 @@ def get(ctx, tool_id):
 
 @tool.command()
 @click.argument("tool_id")
-@click.option("--name", required=True, help="New name of the tool")
+@click.option("--name", required=False, help="New name of the tool")
 @click.option("--description", help="New description of the tool")
+@click.option("--code", help="New code of the tool")
+@click.option("--version", help="New version of the tool")
+@click.option("--extra_attributes", help="New extra attributes of the tool")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
 @handle_exceptions
-def update(ctx, tool_id, name, description):
+def update(ctx, tool_id, name, description, code, version, extra_attributes):
     """Update a tool"""
     logger = ctx.obj["logger"]
     logger.debug(
-        f"Updating tool with ID: {tool_id}, name: {name}, description: {description}",
+        f"Updating tool with ID: {tool_id}, name: {name}, description: {description}, code: {code}, version: {version}, extra_attributes: {extra_attributes}",
     )
 
     swarm_cli = SwarmCLI(ctx.obj["base_url"])
-    tool = swarm_cli.update_tool(tool_id, name, description)
+    update_data = {
+        "tool_id": tool_id,
+        "name": name,
+        "description": description,
+        "code": code,
+        "version": version,
+        "extra_attributes": extra_attributes,
+    }
+    update_data = {k: v for k, v in update_data.items() if v is not None}
+    tool = swarm_cli.update_tool(**update_data)
     click.echo(tool)
 
 

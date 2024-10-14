@@ -6,6 +6,8 @@ from enum import Enum
 from functools import wraps
 from json import JSONDecodeError
 from pathlib import Path
+from re import sub
+from typing import NamedTuple
 
 import click
 import requests
@@ -69,8 +71,7 @@ def make_request(method, url, headers=None, data=None, params=None):
         response.raise_for_status()
         json_data = response.json()
         return json_data
-    else:
-        return None
+    return None
 
 
 def debug_logging(func):
@@ -131,6 +132,12 @@ class RelationshipType(str, Enum):
     SUPERVISES = "supervises"
 
 
+class AgentRelationship(NamedTuple):
+    relationship_type: RelationshipType
+    source_agent_id: str
+    target_agent_id: str
+
+
 # https://stackoverflow.com/questions/44247099/click-command-line-interfaces-make-options-required-if-other-optional-option-is
 class Mutex(click.Option):
     def __init__(self, *args, **kwargs) -> None:
@@ -157,6 +164,19 @@ class Mutex(click.Option):
                         + str(mutex_opt)
                         + ".",
                     )
-                else:
-                    self.prompt = None
+                self.prompt = None
         return super().handle_parse_result(ctx, opts, args)
+
+
+def pascal_case(s):
+    return sub(r"(_|-| )+", " ", s).title().replace(" ", "")
+
+
+def snake_case(s):
+    return "_".join(
+        sub(
+            "([A-Z][a-z]+)",
+            r" \1",
+            sub("([A-Z]+)", r" \1", s.replace("-", " ")),
+        ).split(),
+    ).lower()
