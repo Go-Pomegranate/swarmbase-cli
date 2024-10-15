@@ -20,8 +20,16 @@ def tool(ctx):
 @tool.command()
 @click.option("--name", required=True, help="Name of the tool")
 @click.option("--description", help="Description of the tool")
-@click.option("--version", help="Name of the tool")
+@click.option("--version", help="Version of the tool")
 @click.option("--code", help="Code of the tool")
+@click.option(
+    "--inputs",
+    help="Inputs of the tool. Example: {'name': 'first_param', 'type':'str', 'description': 'the first parameter of the funciton'}",
+)
+@click.option(
+    "--outputs",
+    help="Outputs of the tool. Example: {'name': 'output', 'type':'str', 'description': 'the output of the funciton'}",
+)
 @click.option(
     "--extra_attributes",
     help="Extra attributes of the tool specified in a dictionary",
@@ -30,11 +38,13 @@ def tool(ctx):
 @click.pass_context
 @debug_logging
 @handle_exceptions
-def create(ctx, name, description, version, code, extra_attributes):
+def create(
+    ctx, name, description, version, code, inputs, outputs, extra_attributes
+):
     """Create a new tool"""
     logger = ctx.obj["logger"]
     logger.debug(
-        f"Creating tool with name: {name}, description: {description}, version: {version}, code: {code}, extra_attributes: {extra_attributes},",
+        f"Creating tool with name: {name}, description: {description}, version: {version}, code: {code}, inputs: {inputs}, outputs: {outputs}, extra_attributes: {extra_attributes},",
     )
 
     swarm_cli = SwarmCLI(ctx.obj["base_url"])
@@ -43,6 +53,8 @@ def create(ctx, name, description, version, code, extra_attributes):
         description,
         version,
         code,
+        inputs,
+        outputs,
         extra_attributes,
     )
     click.echo(tool)
@@ -84,17 +96,29 @@ def get(ctx, tool_id):
 @click.option("--name", required=False, help="New name of the tool")
 @click.option("--description", help="New description of the tool")
 @click.option("--code", help="New code of the tool")
+@click.option("--inputs", help="New inputs of the tool")
+@click.option("--outputs", help="New outputs of the tool")
 @click.option("--version", help="New version of the tool")
 @click.option("--extra_attributes", help="New extra attributes of the tool")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
 @handle_exceptions
-def update(ctx, tool_id, name, description, code, version, extra_attributes):
+def update(
+    ctx,
+    tool_id,
+    name,
+    description,
+    code,
+    inputs,
+    outputs,
+    version,
+    extra_attributes,
+):
     """Update a tool"""
     logger = ctx.obj["logger"]
     logger.debug(
-        f"Updating tool with ID: {tool_id}, name: {name}, description: {description}, code: {code}, version: {version}, extra_attributes: {extra_attributes}",
+        f"Updating tool with ID: {tool_id}, name: {name}, description: {description}, code: {code}, inputs: {inputs}, outputs: {outputs}, version: {version}, extra_attributes: {extra_attributes}",
     )
 
     swarm_cli = SwarmCLI(ctx.obj["base_url"])
@@ -103,6 +127,8 @@ def update(ctx, tool_id, name, description, code, version, extra_attributes):
         "name": name,
         "description": description,
         "code": code,
+        "inputs": inputs,
+        "outputs": outputs,
         "version": version,
         "extra_attributes": extra_attributes,
     }

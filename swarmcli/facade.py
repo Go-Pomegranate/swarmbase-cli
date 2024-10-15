@@ -199,6 +199,8 @@ class SwarmCLI:
         description: Optional[str] = None,
         version: Optional[str] = None,
         code: Optional[str] = None,
+        inputs: Optional[str] = None,
+        outputs: Optional[str] = None,
         extra_attributes: Optional[Dict[str, Any]] = None,
     ):
         data = {
@@ -206,6 +208,8 @@ class SwarmCLI:
             "description": description,
             "version": version,
             "code": code,
+            "inputs": inputs,
+            "outputs": outputs,
             "extra_attributes": extra_attributes,
         }
         return self.tool_client.create(data)
@@ -223,6 +227,8 @@ class SwarmCLI:
         description: Optional[str] = None,
         version: Optional[str] = None,
         code: Optional[str] = None,
+        inputs: Optional[str] = None,
+        outputs: Optional[str] = None,
         extra_attributes: Optional[Dict[str, Any]] = None,
     ):
         data = {
@@ -230,6 +236,8 @@ class SwarmCLI:
             "description": description,
             "version": version,
             "code": code,
+            "inputs": inputs,
+            "outputs": outputs,
             "extra_attributes": extra_attributes,
         }
         return self.tool_client.update(tool_id, data)
