@@ -119,7 +119,7 @@ def export(ctx, swarm_id, framework_name, base_path, requirements_file):
     logger.debug(f"Exporting swarm with ID: {swarm_id}")
 
     if framework_name is None:
-        framework_name = "swarmybasecore"
+        framework_name = "swarmbasecore"
     data = {
         "swarm_id": swarm_id,
         "framework_name": framework_name,

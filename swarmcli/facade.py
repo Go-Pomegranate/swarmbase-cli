@@ -2,17 +2,17 @@ import concurrent.futures
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from swarmybasecore.framework_builder import CreatorFactory
+from swarmbasecore.framework_builder import CreatorFactory
 
-from swarmybasecore.utils import RelationshipType
+from swarmbasecore.utils import RelationshipType
 
-from swarmybasecore.builders import (
+from swarmbasecore.builders import (
     AgentBuilder,
     FrameworkBuilder,
     SwarmBuilder,
     ToolBuilder,
 )
-from swarmybasecore.clients import (
+from swarmbasecore.clients import (
     AgentClient,
     FrameworkClient,
     SwarmClient,
@@ -156,9 +156,7 @@ class SwarmCLI:
     def get_swarm(self, swarm_id: str):
         return self.swarm_client.get(swarm_id)
 
-    def update_swarm(
-        self, swarm_id: str, name: str, description: Optional[str] = None
-    ):
+    def update_swarm(self, swarm_id: str, name: str, description: Optional[str] = None):
         data = {"name": name, "description": description}
         return self.swarm_client.update(swarm_id, data)
 
@@ -186,9 +184,7 @@ class SwarmCLI:
                     requirements_file,
                 ),
             ]
-        return [
-            task.result() for task in concurrent.futures.as_completed(tasks)
-        ]
+        return [task.result() for task in concurrent.futures.as_completed(tasks)]
 
     def delete_swarm(self, swarm_id: str):
         return self.swarm_client.delete(swarm_id)
