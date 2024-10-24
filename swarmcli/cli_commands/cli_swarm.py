@@ -2,6 +2,7 @@ import click
 
 from swarmcli.facade import SwarmCLI
 from swarmcli.utils import (
+    Mutex,
     cli,
     debug_logging,
     handle_exceptions,
@@ -101,6 +102,64 @@ def delete(ctx, swarm_id):
 
     swarm_cli = SwarmCLI(ctx.obj["base_url"])
     response = swarm_cli.delete_swarm(swarm_id)
+    click.echo(response)
+
+
+@swarm.command()
+@click.argument("swarm_id")
+@click.option(
+    "--agent_id",
+    required=True,
+    help="Id of the agent",
+)
+@click.option("--debug", is_flag=True, help="Enable debug logging")
+@click.pass_context
+@debug_logging
+@handle_exceptions
+def add_agent(
+    ctx,
+    swarm_id,
+    agent_id,
+) -> None:
+    """Adds agent to the swarm. Specify agent id"""
+    logger = ctx.obj["logger"]
+
+    if agent_id:
+        logger.debug(f"Adding agent {agent_id} to the swarm {swarm_id}")
+        agent_data = {"agent_id": agent_id}
+
+    # TODO add handling if agent_id is not provided?
+
+    swarm_cli = SwarmCLI(ctx.obj["base_url"])
+    response = swarm_cli.add_agent_to_swarm(swarm_id, agent_data)
+    click.echo(response)
+
+
+@swarm.command()
+@click.argument("swarm_id")
+@click.option(
+    "--agent_id",
+    required=True,
+    help="Id of the agent",
+)
+@click.option("--debug", is_flag=True, help="Enable debug logging")
+@click.pass_context
+@debug_logging
+@handle_exceptions
+def remove_agent(
+    ctx,
+    swarm_id,
+    agent_id,
+) -> None:
+    """Removes agent from the swarm. Specify agent id"""
+    logger = ctx.obj["logger"]
+
+    if agent_id:
+        logger.debug(f"Removing agent {agent_id} from the swarm {swarm_id}")
+        agent_data = {"agent_id": agent_id}
+
+    swarm_cli = SwarmCLI(ctx.obj["base_url"])
+    response = swarm_cli.remove_agent_from_swarm(swarm_id, agent_data)
     click.echo(response)
 
 

@@ -22,10 +22,10 @@ from swarmbasecore.clients import (
 
 class SwarmCLI:
     def __init__(self, base_url):
-        self.agent_client = AgentClient(base_url)
-        self.framework_client = FrameworkClient(base_url)
-        self.swarm_client = SwarmClient(base_url)
-        self.tool_client = ToolClient(base_url)
+        self.agent_client: AgentClient = AgentClient(base_url)
+        self.framework_client: FrameworkClient = FrameworkClient(base_url)
+        self.swarm_client: SwarmClient = SwarmClient(base_url)
+        self.tool_client: ToolClient = ToolClient(base_url)
 
     # Metody bezpośredniego tworzenia
     def create_agent(
@@ -156,9 +156,25 @@ class SwarmCLI:
     def get_swarm(self, swarm_id: str):
         return self.swarm_client.get(swarm_id)
 
-    def update_swarm(self, swarm_id: str, name: str, description: Optional[str] = None):
+    def update_swarm(
+        self, swarm_id: str, name: str, description: Optional[str] = None
+    ):
         data = {"name": name, "description": description}
         return self.swarm_client.update(swarm_id, data)
+
+    def add_agent_to_swarm(self, swarm_id: str, agent_data: Dict[str, Any]):
+        return self.swarm_client.add_agent_to_swarm(
+            swarm_id,
+            agent_data,
+        )
+
+    def remove_agent_from_swarm(
+        self, swarm_id: str, agent_data: Dict[str, Any]
+    ):
+        return self.swarm_client.remove_agent_from_swarm(
+            swarm_id,
+            agent_data,
+        )
 
     def export_swarm(
         self,
@@ -184,7 +200,9 @@ class SwarmCLI:
                     requirements_file,
                 ),
             ]
-        return [task.result() for task in concurrent.futures.as_completed(tasks)]
+        return [
+            task.result() for task in concurrent.futures.as_completed(tasks)
+        ]
 
     def delete_swarm(self, swarm_id: str):
         return self.swarm_client.delete(swarm_id)
