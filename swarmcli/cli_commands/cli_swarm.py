@@ -106,7 +106,11 @@ def delete(ctx, swarm_id):
 
 
 @swarm.command()
-@click.argument("swarm_id")
+@click.option(
+    "--swarm_id",
+    help="Id of the swarm",
+    required=True,
+)
 @click.option(
     "--agent_id",
     required=True,
@@ -136,7 +140,11 @@ def add_agent(
 
 
 @swarm.command()
-@click.argument("swarm_id")
+@click.option(
+    "--swarm_id",
+    help="Id of the swarm",
+    required=True,
+)
 @click.option(
     "--agent_id",
     required=True,
