@@ -1,0 +1,9 @@
+flask
+pytest
+click
+sqlalchemy
+pydantic
+flask-cors
+wheel
+gradio
+git+https://github.com/jzftran/swarmbase-core.git
