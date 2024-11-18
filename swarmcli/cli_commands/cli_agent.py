@@ -186,24 +186,24 @@ def get_relationships(ctx, agent_id) -> None:
 
 
 @agent.command()
-@click.argument("agent_id")
+@click.option("--agent_id", required=True)
 @click.option(
     "--tool_id",
-    required=False,
     cls=Mutex,
     help="Id of the tool",
     not_required_if=["name", "description"],
+    prompt=True,
 )
 @click.option(
     "--name",
     cls=Mutex,
-    not_required_if=["tool"],
+    not_required_if=["tool_id"],
     help="Name of the tool",
 )
 @click.option(
     "--description",
     cls=Mutex,
-    not_required_if=["tool"],
+    not_required_if=["tool_id"],
     help="Description of the tool",
 )
 @click.option("--version", help="Version of the tool")
@@ -253,7 +253,9 @@ def add_tool(
 
 
 @agent.command()
-@click.argument("agent_id")
+@click.option(
+    "--agent_id", required=True, help="Id of the agent from which to remove tool"
+)
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.option(
     "--tool_id",
