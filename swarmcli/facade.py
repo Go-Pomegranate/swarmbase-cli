@@ -19,6 +19,10 @@ from swarmbasecore.clients import (
     ToolClient,
 )
 
+<<<<<<< HEAD
+from migrator.migrator import Migrator
+=======
+>>>>>>> f28ca9b873c087278f1ed6f2d31e4854ab14d8a6
 
 class SwarmCLI:
     def __init__(self, base_url):
@@ -26,8 +30,16 @@ class SwarmCLI:
         self.framework_client: FrameworkClient = FrameworkClient(base_url)
         self.swarm_client: SwarmClient = SwarmClient(base_url)
         self.tool_client: ToolClient = ToolClient(base_url)
+<<<<<<< HEAD
+        self.migrator = Migrator()
+
+    def migrate(self, source=None, destination=None):
+        self.migrator.migrate(source, destination)
+
+=======
 
     # Metody bezpośredniego tworzenia
+>>>>>>> f28ca9b873c087278f1ed6f2d31e4854ab14d8a6
     def create_agent(
         self,
         name: str,

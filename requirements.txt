@@ -6,5 +6,9 @@ pydantic
 flask-cors
 wheel
 gradio
+<<<<<<< HEAD
+git+https://github.com/jzftran/swarmbase-core.git
+=======
 # setup is needed here to install swarmybase-core
 git+https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/jzftran/swarmbase-core.git
+>>>>>>> f28ca9b873c087278f1ed6f2d31e4854ab14d8a6
