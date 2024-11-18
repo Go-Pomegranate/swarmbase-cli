@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 import subprocess
 import os
 import requests
@@ -8,6 +9,9 @@ from agency_swarm import BaseTool
 from pydantic import Field
 from agency_swarm import Agent, Agency
 from agency_swarm.tools import BaseTool
+
+os.chdir(Path(__file__).parent)
+set_openai_key(os.environ["OPENAI_API_KEY_ANOTHER"])
 
 
 def setup_logger(name, log_file, level=logging.INFO):
@@ -239,7 +243,6 @@ class Migrator:
 
 
 if __name__ == "__main__":
-    set_openai_key("")
     source_path = "/Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim2"
     destination_path = "/Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim2"
 
