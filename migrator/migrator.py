@@ -9,8 +9,6 @@ from pydantic import Field
 from agency_swarm import Agent, Agency
 from agency_swarm.tools import BaseTool
 
-set_openai_key("")
-
 
 def setup_logger(name, log_file, level=logging.INFO):
     """Function to setup as many loggers as you want"""
@@ -82,10 +80,12 @@ def get_project_important_folders(folders: list[str]) -> list[str]:
             )  # Handle errors
     return folder_structure
 
+
 agency_manifesto = """
 Agency Manifesto
 You are a part of company named swarmbase.ai. Swarmbase.ai is a company that offer the platform to aggregate, maintain and develop multi-agents swarms on scale
 """
+
 
 class SendMessageToGChat(BaseTool):
     message: str = Field(..., description="Message to send to Google Chat")
@@ -103,6 +103,7 @@ class SendMessageToGChat(BaseTool):
             return "Message sent to GChat successfully."
         else:
             return f"Failed to send message to GChat. Status code: {response.status_code}, Response: {response.text}"
+
 
 class File(BaseTool):
     """
@@ -160,11 +161,12 @@ def replace_bracketed_word(text, word_to_replace, replacement_word):
     """
     # Construct the pattern to search for
     pattern = f"[{word_to_replace}]"
-    
+
     # Replace occurrences of the pattern with the replacement word
     modified_text = text.replace(pattern, replacement_word)
-    
+
     return modified_text
+
 
 from migrator.DomainWorker.Agents.AgentsWorker import AgentsDomainWorker
 from migrator.DomainWorker.Swarm.SwarmsWorker import SwarmsDomainWorker
@@ -172,6 +174,7 @@ from migrator.DomainWorker.Framework.FrameworksWorker import FrameworksDomainWor
 from migrator.DomainWorker.Tools.ToolsWorker import ToolsDomainWorker
 from migrator.Overseer import Overseer
 from migrator.Supervisor import Supervisor
+
 
 class Migrator:
     """
@@ -208,7 +211,7 @@ class Migrator:
                 [overseer, swarmsDomainWorker],
                 [overseer, frameworksDomainWorker],
                 [overseer, agentsDomainWorker],
-                [overseer, toolsDomainWorker]
+                [overseer, toolsDomainWorker],
             ],
             shared_instructions=agency_manifesto,
         )
@@ -216,27 +219,29 @@ class Migrator:
     def migrate(self, source, destination):
         """
         Method to perform the migration and trigger the agency.
-        
+
         :param source: Path to the source data.
         :param destination: Path to the destination.
         """
         self.source = source
         self.destination = destination
-        
+
         try:
             # Example migration logic
             print(f"Migration from {self.source} to {self.destination} started.")
-            
+
             # Trigger the agency
             self.agency.demo_gradio(height=900)
-            
+
             print("Migration completed successfully.")
         except Exception as e:
             print(f"Error during migration: {e}")
 
+
 if __name__ == "__main__":
+    set_openai_key("")
     source_path = "/Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim2"
     destination_path = "/Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim2"
-    
+
     migrator = Migrator()
     migrator.migrate(source_path, destination_path)

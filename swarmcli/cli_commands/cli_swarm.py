@@ -2,19 +2,13 @@ import click
 
 from swarmcli.facade import SwarmCLI
 from swarmcli.utils import (
-<<<<<<< HEAD
-=======
     Mutex,
->>>>>>> f28ca9b873c087278f1ed6f2d31e4854ab14d8a6
     cli,
     debug_logging,
     handle_exceptions,
 )
 
-<<<<<<< HEAD
-=======
 
->>>>>>> f28ca9b873c087278f1ed6f2d31e4854ab14d8a6
 @cli.group()
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
