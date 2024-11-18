@@ -58,3 +58,4 @@ open_ai_secrets.py
 *.swo
 
 *.cache
+*.env
