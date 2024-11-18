@@ -10,7 +10,10 @@ from re import sub
 from typing import NamedTuple
 import requests
 import click
+<<<<<<< HEAD
 from swarmcli.version import __version__
+=======
+>>>>>>> f28ca9b873c087278f1ed6f2d31e4854ab14d8a6
 
 CONFIG_FILE = Path.expanduser(Path("~/.swarm_cli_config.json"))
 
@@ -40,11 +43,14 @@ def setup_logging(debug: bool):
 @click.option("--base-url", help="Base URL of the swarmbase.ai API")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
+<<<<<<< HEAD
 @click.version_option(
     version=__version__,
     prog_name="Swarmbase CLI",
     message="%(prog)s %(version)s"
 )
+=======
+>>>>>>> f28ca9b873c087278f1ed6f2d31e4854ab14d8a6
 def cli(ctx: click.Context, base_url: str, debug: bool) -> None:
     config = load_config()
     if base_url:

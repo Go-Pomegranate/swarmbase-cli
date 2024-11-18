@@ -9,6 +9,10 @@ from swarmcli.utils import (
     handle_exceptions,
 )
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f28ca9b873c087278f1ed6f2d31e4854ab14d8a6
 @cli.group()
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
