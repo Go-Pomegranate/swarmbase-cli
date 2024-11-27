@@ -21,6 +21,7 @@ from swarmbasecore.clients import (
 
 from migrator.migrator import Migrator
 
+
 class SwarmCLI:
     def __init__(self, base_url):
         self.agent_client: AgentClient = AgentClient(base_url)
@@ -28,11 +29,11 @@ class SwarmCLI:
         self.swarm_client: SwarmClient = SwarmClient(base_url)
         self.tool_client: ToolClient = ToolClient(base_url)
 
+    def migrate(self, source=None, destination=None):
+        # init Migrator when needed
         self.migrator = Migrator()
 
-    def migrate(self, source=None, destination=None):
         self.migrator.migrate(source, destination)
-
 
     # Metody bezpośredniego tworzenia
 
@@ -164,9 +165,7 @@ class SwarmCLI:
     def get_swarm(self, swarm_id: str):
         return self.swarm_client.get(swarm_id)
 
-    def update_swarm(
-        self, swarm_id: str, name: str, description: Optional[str] = None
-    ):
+    def update_swarm(self, swarm_id: str, name: str, description: Optional[str] = None):
         data = {"name": name, "description": description}
         return self.swarm_client.update(swarm_id, data)
 
@@ -176,9 +175,7 @@ class SwarmCLI:
             agent_data,
         )
 
-    def remove_agent_from_swarm(
-        self, swarm_id: str, agent_data: Dict[str, Any]
-    ):
+    def remove_agent_from_swarm(self, swarm_id: str, agent_data: Dict[str, Any]):
         return self.swarm_client.remove_agent_from_swarm(
             swarm_id,
             agent_data,
@@ -208,9 +205,7 @@ class SwarmCLI:
                     requirements_file,
                 ),
             ]
-        return [
-            task.result() for task in concurrent.futures.as_completed(tasks)
-        ]
+        return [task.result() for task in concurrent.futures.as_completed(tasks)]
 
     def delete_swarm(self, swarm_id: str):
         return self.swarm_client.delete(swarm_id)

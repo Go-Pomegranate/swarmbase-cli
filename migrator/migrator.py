@@ -11,7 +11,7 @@ from agency_swarm import Agent, Agency
 from agency_swarm.tools import BaseTool
 
 os.chdir(Path(__file__).parent)
-set_openai_key(os.environ["OPENAI_API_KEY_ANOTHER"])
+set_openai_key(os.environ["OPENAI_API_KEY"])
 
 
 def setup_logger(name, log_file, level=logging.INFO):
@@ -180,7 +180,25 @@ from migrator.Overseer import Overseer
 from migrator.Supervisor import Supervisor
 
 
-class Migrator:
+from threading import Lock
+
+
+class SingletonMeta(type):
+    _instances = {}
+
+    _lock: Lock = Lock()
+
+    def __call__(cls, *args, **kwargs):
+
+        with cls._lock:
+
+            if cls not in cls._instances:
+                instance = super().__call__(*args, **kwargs)
+                cls._instances[cls] = instance
+        return cls._instances[cls]
+
+
+class Migrator(metaclass=SingletonMeta):
     """
     Migrator class responsible for migrating data or files.
     """
