@@ -60,7 +60,7 @@ def list(ctx) -> None:
 
 
 @agent.command()
-@click.argument("agent_id")
+@click.option("--agent_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
@@ -76,7 +76,7 @@ def get(ctx, agent_id) -> None:
 
 
 @agent.command()
-@click.argument("agent_id")
+@click.option("--agent_id", "--id")
 @click.option("--name", required=True, help="New name of the agent")
 @click.option("--description", help="New description of the agent")
 @click.option("--instructions", help="Instructions for the agent")
@@ -102,7 +102,7 @@ def update(ctx, agent_id, name, description, instructions, extra_attributes) -> 
 
 
 @agent.command()
-@click.argument("agent_id")
+@click.option("--agent_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
@@ -170,7 +170,7 @@ def unlink(ctx, agent1, agent2) -> None:
 
 
 @agent.command()
-@click.argument("agent_id")
+@click.option("--agent_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
@@ -276,7 +276,7 @@ def remove_tool(ctx, agent_id, tool_id) -> None:
 
 
 @agent.command()
-@click.argument("agent_id")
+@click.option("--agent_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging

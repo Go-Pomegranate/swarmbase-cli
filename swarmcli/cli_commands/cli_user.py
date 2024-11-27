@@ -52,7 +52,7 @@ def list(ctx):
 
 
 @user.command()
-@click.argument("user_id")
+@click.option("--user_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
@@ -68,7 +68,7 @@ def get(ctx, user_id):
 
 
 @user.command()
-@click.argument("user_id")
+@click.option("--user_id", "--id")
 @click.option("--name", required=True, help="New name of the user")
 @click.option("--email", required=True, help="New email of the user")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
@@ -88,7 +88,7 @@ def update(ctx, user_id, name, email):
 
 
 @user.command()
-@click.argument("user_id")
+@click.option("--user_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging

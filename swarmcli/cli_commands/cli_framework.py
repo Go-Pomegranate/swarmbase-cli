@@ -1,4 +1,3 @@
-
 import click
 
 from swarmcli.facade import SwarmCLI
@@ -53,7 +52,7 @@ def list(ctx):
 
 
 @framework.command()
-@click.argument("framework_id")
+@click.option("--framework_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
@@ -69,7 +68,7 @@ def get(ctx, framework_id):
 
 
 @framework.command()
-@click.argument("framework_id")
+@click.option("--framework_id", "--id")
 @click.option("--name", required=True, help="New name of the framework")
 @click.option("--description", help="New description of the framework")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
@@ -89,7 +88,7 @@ def update(ctx, framework_id, name, description):
 
 
 @framework.command()
-@click.argument("framework_id")
+@click.option("--framework_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
@@ -105,7 +104,7 @@ def delete(ctx, framework_id):
 
 
 @framework.command()
-@click.argument("framework_id")
+@click.option("--framework_id", "--id")
 @click.option("--swarm_id", required=True, help="ID of the swarm")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
@@ -122,7 +121,7 @@ def add_swarm(ctx, framework_id, swarm_id):
 
 
 @framework.command()
-@click.argument("framework_id")
+@click.option("--framework_id", "--id")
 @click.option("--swarm_id", required=True, help="ID of the swarm")
 @click.option("--swarm_name", required=True, help="Name of the swarm")
 @click.option("--debug", is_flag=True, help="Enable debug logging")

@@ -29,6 +29,12 @@ task: migration
 
 
 
+
+
+
+
+
+
 ### 2. Visit the "folder_path" and understand the structure of the project.
 
 ### 3. Make "summary.yml" file in "folder_path" that looks like this:
@@ -54,6 +60,12 @@ Domains:
     - paths: [List of paths to where helper methods created my the user are stored]
     - entities: [List of helper methods names]
 ```
+
+
+
+
+
+
 
 
 
@@ -110,6 +122,12 @@ Domains:
         - get_project_tree_output
         - get_project_important_folders
 ```
+
+
+
+
+
+
 
 
 

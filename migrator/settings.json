@@ -1389,5 +1389,434 @@
             }
         },
         "top_p": 1.0
+    },
+    {
+        "id": "asst_p7JWg9W7Epxq36hK72Nvxujw",
+        "created_at": 1732731661,
+        "description": "Responsible for communication with the user. Delegates work across many Virtual Assistants.",
+        "instructions": "\n        Agency Manifesto\n        You are a part of company named swarmbase.ai. Swarmbase.ai is a company that offer the platform to aggregate, maintain and develop multi-agents swarms on scale\n        \n\n**You are the supervisior of larger virtual assistance swarm. You must converse with other agents to ensure complete task execution.**\n\n There is 4 domains that interest you the most: swarms, tools, agents and frameworks.\n\nDefinitions of swarmbase.ai ecosystem domain entities:\n\nAgents: Entities that perform specific tasks. Usually named after the role they play.\nFrameworks: Structures or systems that provide a foundation for agents to operate within.\nSwarms: Collections of agents working together to achieve a common goal.\nTools: Utilities and resources that agents use to perform their tasks more efficiently.\n\n# Steps to Follow\n\n### 1. You will receive YAML message like this:\n\n[[client_request_yaml.sh]]\n```bash\ntask: migration\n    client_project_info:\n    source_type: local  # can be \"local\" or \"external\"\n    source_name: local_filesystem  # name of the source, can be \"local_filesystem\"\n    folder_path: /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1  # path to the folder\n```\n\n\n\n\n\n\n\n\n\n\n\n\n### 2. Visit the \"folder_path\" and understand the structure of the project.\n\n### 3. Make \"summary.yml\" file in \"folder_path\" that looks like this:\n\n[[domains_yml.sh]]\n```bash\nDomains:\n    - tools\n        - paths: [List of paths to where tools are stored]\n        - entities: [List of tools]\n        - tool_source:\n            - type: [Type of source, can be \"local\" or \"external\".]\n            - name: [Name of the source, can be \"langchain\", \"local\", \"other\"]\n    - agents\n        - paths: [List of paths to where agents are stored]\n        - entities: [List of agents]\n    - frameworks\n        - paths: [List of paths to where frameworks are stored]\n        - entities: [Pick only one from the list: \"swarm-agency\", \"LangGraph\", \"autogen\", \"other\"]\n    - swarms\n        - paths: [List of paths to where swarms are stored]\n    Helper methods:\n    - paths: [List of paths to where helper methods created my the user are stored]\n    - entities: [List of helper methods names]\n```\n\n\n\n\n\n\n\n\n\n\n\n\n**Example 'summary.yml' YAML file:**\n\n[[summary_example.sh]]\n```bash\nDomains:\n        - tools\n            - paths: \n            - /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1/main.py\n            - entities: \n            - ToolFactory\n            - HumanInputRun\n            - CopyFileTool\n            - DeleteFileTool\n            - FileSearchTool\n            - ListDirectoryTool\n            - MoveFileTool\n            - ReadFileTool\n            - tool_source:\n                - type: local\n                - name: langchain\n        - agents\n            - paths: \n            - /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1/main.py\n            - entities: \n            - Supervisor\n            - Scout\n            - QualityChecker\n            - ContextCreator\n            - Checker\n            - Dev\n            - Deployer\n        - frameworks\n            - paths: \n            - /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1/main.py\n            - entities: \n            - swarm-agency\n        - swarms\n            - paths: \n            - /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1/main.py\n        Helper methods:\n        - paths: \n        - /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1/main.py\n        - entities: \n        - setup_logger\n        - get_root_tree_output\n        - get_project_tree_output\n        - get_project_important_folders\n```\n\n\n\n\n\n\n\n\n\n\n\n\nTips:\n\n- If paths are paths in the code itself then mention the path to the main file not imports.\n- If particular domain is not found then leave N/A in the paths.\n\n### 4. Save file summary in the file named 'summary.yaml' in the \"folder_path\" folder where 'folder_path' is provided in 'client_request_yaml.sh'.\n\n### 5. After creation - send information to 'overseer' that 'summary.yaml' is ready with correct path to 'summary.yaml' file.\n\n### Tips:\n\n- Always follow the \"Steps To Follow\"\n- Make sure all domain entities are covered and you did not miss any.\n",
+        "metadata": {},
+        "model": "gpt-4o-mini",
+        "name": "Supervisor",
+        "object": "assistant",
+        "tools": [
+            {
+                "function": {
+                    "name": "ExecuteCommand",
+                    "description": "Run any command from the terminal. If there are too many logs, the outputs might be truncated.",
+                    "parameters": {
+                        "properties": {
+                            "command": {
+                                "description": "The command to be executed.",
+                                "title": "Command",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "command"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            },
+            {
+                "function": {
+                    "name": "FileModifier",
+                    "description": "Class to handle file modification operations.",
+                    "parameters": {
+                        "properties": {
+                            "file_name": {
+                                "description": "The name of the file to be modified.",
+                                "title": "File Name",
+                                "type": "string"
+                            },
+                            "start_line": {
+                                "description": "The starting line number for modification.",
+                                "title": "Start Line",
+                                "type": "integer"
+                            },
+                            "end_line": {
+                                "default": 0,
+                                "description": "The ending line number for modification.",
+                                "title": "End Line",
+                                "type": "integer"
+                            },
+                            "new_content": {
+                                "description": "The new content to insert into the file.",
+                                "title": "New Content",
+                                "type": "string"
+                            },
+                            "restricted_directories": {
+                                "description": "List of restricted directories where modifications are not allowed.",
+                                "items": {},
+                                "title": "Restricted Directories",
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "file_name",
+                            "new_content",
+                            "restricted_directories",
+                            "start_line"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            },
+            {
+                "function": {
+                    "name": "list_directory",
+                    "description": "List files and directories in a specified folder",
+                    "parameters": {
+                        "properties": {
+                            "dir_path": {
+                                "anyOf": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ],
+                                "default": ".",
+                                "description": "Subdirectory to list.",
+                                "title": "Dir Path"
+                            }
+                        },
+                        "type": "object",
+                        "required": []
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            },
+            {
+                "function": {
+                    "name": "read_file",
+                    "description": "Read file from disk",
+                    "parameters": {
+                        "properties": {
+                            "file_path": {
+                                "description": "name of file",
+                                "title": "File Path",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "file_path"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            },
+            {
+                "function": {
+                    "name": "SendMessage",
+                    "description": "Use this tool to facilitate direct, synchronous communication between specialized agents within your agency. When you send a message using this tool, you receive a response exclusively from the designated recipient agent. To continue the dialogue, invoke this tool again with the desired recipient agent and your follow-up message. Remember, communication here is synchronous; the recipient agent won't perform any tasks post-response. You are responsible for relaying the recipient agent's responses back to the user, as the user does not have direct access to these replies. Keep engaging with the tool for continuous interaction until the task is fully resolved. Do not send more than 1 message at a time.",
+                    "parameters": {
+                        "$defs": {
+                            "recipient": {
+                                "const": "Overseer",
+                                "enum": [
+                                    "Overseer"
+                                ],
+                                "title": "recipient",
+                                "type": "string"
+                            }
+                        },
+                        "properties": {
+                            "my_primary_instructions": {
+                                "description": "Please repeat your primary instructions step-by-step, including both completed and the following next steps that you need to perform. For multi-step, complex tasks, first break them down into smaller steps yourself. Then, issue each step individually to the recipient agent via the message parameter. Each identified step should be sent in separate message. Keep in mind, that the recipient agent does not have access to these instructions. You must include recipient agent-specific instructions in the message or additional_instructions parameters.",
+                                "title": "My Primary Instructions",
+                                "type": "string"
+                            },
+                            "recipient": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/$defs/recipient"
+                                    }
+                                ],
+                                "description": "Overseer: Responsible for overseeing the whole process of making of the migration script in case of completeness of the domains such as swarms, tools, agents, frameworks etc.\n"
+                            },
+                            "message": {
+                                "description": "Specify the task required for the recipient agent to complete. Focus on clarifying what the task entails, rather than providing exact instructions.",
+                                "title": "Message",
+                                "type": "string"
+                            },
+                            "message_files": {
+                                "anyOf": [
+                                    {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ],
+                                "default": null,
+                                "description": "A list of file ids to be sent as attachments to this message. Only use this if you have the file id that starts with 'file-'.",
+                                "examples": [
+                                    "file-1234",
+                                    "file-5678"
+                                ],
+                                "title": "Message Files"
+                            },
+                            "additional_instructions": {
+                                "anyOf": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ],
+                                "default": null,
+                                "description": "Additional context or instructions for the recipient agent about the task. For example, additional information provided by the user or other agents.",
+                                "title": "Additional Instructions"
+                            }
+                        },
+                        "required": [
+                            "message",
+                            "my_primary_instructions",
+                            "recipient"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            }
+        ],
+        "response_format": "auto",
+        "temperature": 0.3,
+        "tool_resources": {
+            "code_interpreter": null,
+            "file_search": null
+        },
+        "top_p": 1.0
+    },
+    {
+        "id": "asst_hqerQURn0KAJBNL8UZVwgGpe",
+        "created_at": 1732731662,
+        "description": "Responsible for overseeing the whole process of making of the migration script in case of completeness of the domains such as swarms, tools, agents, frameworks etc.",
+        "instructions": "\n        Agency Manifesto\n        You are a part of company named swarmbase.ai. Swarmbase.ai is a company that offer the platform to aggregate, maintain and develop multi-agents swarms on scale\n        \n\nYou are swarmbase.ai migration expert that help users to migrate their multi-agent code to swarmbase.ai platform. You focus to oversee the process and confirm if all the parts of user's code is correctly mapped to swarmbase.ai platform.\n\n### Steps to Follow\n\n1. You will read file 'summary.yaml' that is created by 'supervisor' agent. Structure of the file looks like this:\n\n[[domains_yml.sh]]\n```bash\nDomains:\n    - tools\n        - paths: [List of paths to where tools are stored]\n        - entities: [List of tools]\n        - tool_source:\n            - type: [Type of source, can be \"local\" or \"external\".]\n            - name: [Name of the source, can be \"langchain\", \"local\", \"other\"]\n    - agents\n        - paths: [List of paths to where agents are stored]\n        - entities: [List of agents]\n    - frameworks\n        - paths: [List of paths to where frameworks are stored]\n        - entities: [Pick only one from the list: \"swarm-agency\", \"LangGraph\", \"autogen\", \"other\"]\n    - swarms\n        - paths: [List of paths to where swarms are stored]\n    Helper methods:\n    - paths: [List of paths to where helper methods created my the user are stored]\n    - entities: [List of helper methods names]\n```\n\n\n\n\n\n\n\n\n   Example 'summary.yml' YAML file:\n\n[[summary_example.sh]]\n```bash\nDomains:\n        - tools\n            - paths: \n            - /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1/main.py\n            - entities: \n            - ToolFactory\n            - HumanInputRun\n            - CopyFileTool\n            - DeleteFileTool\n            - FileSearchTool\n            - ListDirectoryTool\n            - MoveFileTool\n            - ReadFileTool\n            - tool_source:\n                - type: local\n                - name: langchain\n        - agents\n            - paths: \n            - /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1/main.py\n            - entities: \n            - Supervisor\n            - Scout\n            - QualityChecker\n            - ContextCreator\n            - Checker\n            - Dev\n            - Deployer\n        - frameworks\n            - paths: \n            - /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1/main.py\n            - entities: \n            - swarm-agency\n        - swarms\n            - paths: \n            - /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1/main.py\n        Helper methods:\n        - paths: \n        - /Users/pantere/Repositories/private/projects/swarmbase/VA/migrator/tests/simulations/sim1/main.py\n        - entities: \n        - setup_logger\n        - get_root_tree_output\n        - get_project_tree_output\n        - get_project_important_folders\n```\n\n\n\n\n\n\n\n\n2. Contact:\n\n   a) Swarm Domain Worker to ensure that all the compontents of 'Swarms' domain are correctly mapped. Point the worker to the correct path in the 'summary.yaml' file. Ensure it creates file called 'swarms.py'.\n\n   b) Framework Domain Worker to ensure that all the compontents of 'Frameworks' domain are correctly mapped. Point the worker to the correct path in the 'summary.yaml' file. Ensure it creates file called 'frameworks.py'.\n\n   c) Agents Domain Worker to ensure that all the compontents of 'Agents' domain are correctly mapped. Point the worker to the correct path in the 'summary.yaml' file. Ensure it creates file called 'agents.py'.\n\n   d) Tools Domain Worker to ensure that all the compontents of 'Tools' domain are correctly mapped. Point the worker to the correct path in the 'summary.yaml' file. Ensure it creates file called 'tools.py'.\n3. Ensure there are 'swarms.py', 'frameworks.py', 'agents.py' and 'tools.py' created by reading those files. If not present go back to Domain Worker and force him to create this file with all cost.\n4. You have to create file called 'migration_script.py' where you join all the parts of the code that are correctly mapped. Make sure to create script that runs all of the code of domain workers swarms, frameworks, agents and tools. Only then you can notify the 'supervisor' that you finished the migration script.\n\n   Exact format of the 'migration_script.py' file:\n\n[[migration_script.py]]\n```python\nimport subprocess\nimport os\n\ndef run_script(script_name):\n    try:\n        # Construct the full path to the script\n        script_path = os.path.join(os.getcwd(), script_name)\n\n        # Check if the script exists\n        if not os.path.isfile(script_path):\n            print(f\"Script '{script_name}' not found.\")\n            return\n\n        # Run the script\n        print(f\"Running '{script_name}'...\")\n        result = subprocess.run(['python', script_path], check=True, text=True, capture_output=True)\n        print(f\"Finished running '{script_name}'.\")\n        print(\"Output:\")\n        print(result.stdout)\n    except subprocess.CalledProcessError as e:\n        print(f\"An error occurred while running '{script_name}'.\")\n        print(e.stderr)\n\ndef main():\n    scripts = ['[path_to_project]/swarms.py', '[path_to_project]/agents.py', '[path_to_project]/frameworks.py', '[path_to_project]/tools.py']\n\n    for script in scripts:\n        run_script(script)\n\nif __name__ == '__main__':\n    main()\n```\n\n\n\n\n\n4. Run the 'migration_script.py' file to ensure that all the parts of the code are correctly mapped with the command 'python [folder_path]/migration_script.py', but before that user \"swarm --base-url http://localhost:5001\".\n\nTips:\n\n- Always send paths where to store domain worker's files.\n- Always follow the steps to follow.\n- You are very detailed and micro-managing and double check if domain workers doing their work correctly.\n",
+        "metadata": {},
+        "model": "gpt-4o-mini",
+        "name": "Overseer",
+        "object": "assistant",
+        "tools": [
+            {
+                "function": {
+                    "name": "ExecuteCommand",
+                    "description": "Run any command from the terminal. If there are too many logs, the outputs might be truncated.",
+                    "parameters": {
+                        "properties": {
+                            "command": {
+                                "description": "The command to be executed.",
+                                "title": "Command",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "command"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            },
+            {
+                "function": {
+                    "name": "FileModifier",
+                    "description": "Class to handle file modification operations.",
+                    "parameters": {
+                        "properties": {
+                            "file_name": {
+                                "description": "The name of the file to be modified.",
+                                "title": "File Name",
+                                "type": "string"
+                            },
+                            "start_line": {
+                                "description": "The starting line number for modification.",
+                                "title": "Start Line",
+                                "type": "integer"
+                            },
+                            "end_line": {
+                                "default": 0,
+                                "description": "The ending line number for modification.",
+                                "title": "End Line",
+                                "type": "integer"
+                            },
+                            "new_content": {
+                                "description": "The new content to insert into the file.",
+                                "title": "New Content",
+                                "type": "string"
+                            },
+                            "restricted_directories": {
+                                "description": "List of restricted directories where modifications are not allowed.",
+                                "items": {},
+                                "title": "Restricted Directories",
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "file_name",
+                            "new_content",
+                            "restricted_directories",
+                            "start_line"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            },
+            {
+                "function": {
+                    "name": "list_directory",
+                    "description": "List files and directories in a specified folder",
+                    "parameters": {
+                        "properties": {
+                            "dir_path": {
+                                "anyOf": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ],
+                                "default": ".",
+                                "description": "Subdirectory to list.",
+                                "title": "Dir Path"
+                            }
+                        },
+                        "type": "object",
+                        "required": []
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            },
+            {
+                "function": {
+                    "name": "read_file",
+                    "description": "Read file from disk",
+                    "parameters": {
+                        "properties": {
+                            "file_path": {
+                                "description": "name of file",
+                                "title": "File Path",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "file_path"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            },
+            {
+                "function": {
+                    "name": "SendMessage",
+                    "description": "Use this tool to facilitate direct, synchronous communication between specialized agents within your agency. When you send a message using this tool, you receive a response exclusively from the designated recipient agent. To continue the dialogue, invoke this tool again with the desired recipient agent and your follow-up message. Remember, communication here is synchronous; the recipient agent won't perform any tasks post-response. You are responsible for relaying the recipient agent's responses back to the user, as the user does not have direct access to these replies. Keep engaging with the tool for continuous interaction until the task is fully resolved. Do not send more than 1 message at a time.",
+                    "parameters": {
+                        "$defs": {
+                            "recipient": {
+                                "enum": [
+                                    "Supervisor",
+                                    "SwarmsDomainWorker",
+                                    "frameworkDomainWorker",
+                                    "agentsDomainWorker",
+                                    "ToolsDomainWorker"
+                                ],
+                                "title": "recipient",
+                                "type": "string"
+                            }
+                        },
+                        "properties": {
+                            "my_primary_instructions": {
+                                "description": "Please repeat your primary instructions step-by-step, including both completed and the following next steps that you need to perform. For multi-step, complex tasks, first break them down into smaller steps yourself. Then, issue each step individually to the recipient agent via the message parameter. Each identified step should be sent in separate message. Keep in mind, that the recipient agent does not have access to these instructions. You must include recipient agent-specific instructions in the message or additional_instructions parameters.",
+                                "title": "My Primary Instructions",
+                                "type": "string"
+                            },
+                            "recipient": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/$defs/recipient"
+                                    }
+                                ],
+                                "description": "Supervisor: Responsible for communication with the user. Delegates work across many Virtual Assistants.\nSwarmsDomainWorker: Responsible for overseeing the whole process of making of the migration script in case of completeness of the domains such as swarms, tools, agents, frameworks etc.\nframeworkDomainWorker: Responsible for overseeing the whole process of making of the migration script in case of completeness of the domains such as swarms, tools, agents, frameworks etc.\nagentsDomainWorker: Responsible for overseeing the whole process of making of the migration script in case of completeness of the domains such as swarms, tools, agents, frameworks etc.\nToolsDomainWorker: Responsible for overseeing the whole process of making of the migration script in case of completeness of the domains such as swarms, tools, agents, frameworks etc.\n"
+                            },
+                            "message": {
+                                "description": "Specify the task required for the recipient agent to complete. Focus on clarifying what the task entails, rather than providing exact instructions.",
+                                "title": "Message",
+                                "type": "string"
+                            },
+                            "message_files": {
+                                "anyOf": [
+                                    {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ],
+                                "default": null,
+                                "description": "A list of file ids to be sent as attachments to this message. Only use this if you have the file id that starts with 'file-'.",
+                                "examples": [
+                                    "file-1234",
+                                    "file-5678"
+                                ],
+                                "title": "Message Files"
+                            },
+                            "additional_instructions": {
+                                "anyOf": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ],
+                                "default": null,
+                                "description": "Additional context or instructions for the recipient agent about the task. For example, additional information provided by the user or other agents.",
+                                "title": "Additional Instructions"
+                            }
+                        },
+                        "required": [
+                            "message",
+                            "my_primary_instructions",
+                            "recipient"
+                        ],
+                        "type": "object"
+                    },
+                    "strict": false
+                },
+                "type": "function"
+            }
+        ],
+        "response_format": "auto",
+        "temperature": 0.3,
+        "tool_resources": {
+            "code_interpreter": null,
+            "file_search": null
+        },
+        "top_p": 1.0
     }
 ]

@@ -54,7 +54,7 @@ def list(ctx):
 
 
 @swarm.command()
-@click.argument("swarm_id")
+@click.option("--swarm_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
@@ -70,7 +70,7 @@ def get(ctx, swarm_id):
 
 
 @swarm.command()
-@click.argument("swarm_id")
+@click.option("--swarm_id", "--id")
 @click.option("--name", required=True, help="New name of the swarm")
 @click.option("--description", help="New description of the swarm")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
@@ -90,7 +90,7 @@ def update(ctx, swarm_id, name, description):
 
 
 @swarm.command()
-@click.argument("swarm_id")
+@click.option("--swarm_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
@@ -172,7 +172,7 @@ def remove_agent(
 
 
 @swarm.command()
-@click.argument("swarm_id")
+@click.option("--swarm_id", "--id")
 @click.option("--framework_name", help="Name of the framework", required=False)
 @click.option("--base_path", required=False)
 @click.option("--requirements_file", required=False)

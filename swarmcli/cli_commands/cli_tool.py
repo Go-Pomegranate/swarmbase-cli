@@ -38,9 +38,7 @@ def tool(ctx):
 @click.pass_context
 @debug_logging
 @handle_exceptions
-def create(
-    ctx, name, description, version, code, inputs, outputs, extra_attributes
-):
+def create(ctx, name, description, version, code, inputs, outputs, extra_attributes):
     """Create a new tool"""
     logger = ctx.obj["logger"]
     logger.debug(
@@ -76,7 +74,7 @@ def list(ctx):
 
 
 @tool.command()
-@click.argument("tool_id")
+@click.option("--tool_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging
@@ -92,7 +90,7 @@ def get(ctx, tool_id):
 
 
 @tool.command()
-@click.argument("tool_id")
+@click.option("--tool_id", "--id")
 @click.option("--name", required=False, help="New name of the tool")
 @click.option("--description", help="New description of the tool")
 @click.option("--code", help="New code of the tool")
@@ -138,7 +136,7 @@ def update(
 
 
 @tool.command()
-@click.argument("tool_id")
+@click.option("--tool_id", "--id")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.pass_context
 @debug_logging

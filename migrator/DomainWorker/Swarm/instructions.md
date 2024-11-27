@@ -62,6 +62,9 @@ Domains:
 
 
 
+
+
+
     Visit the paths that are mentioned in the file, depening on the domain you work on.
 
 4. Check if all the components of the domain are correctly mapped.
@@ -109,6 +112,9 @@ if __name__ == '__main__':
     main()
 
 ```
+
+
+
 
 
 

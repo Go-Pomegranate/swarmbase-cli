@@ -30,6 +30,9 @@ Domains:
 
 
 
+
+
+
    Example 'summary.yml' YAML file:
 
 [[summary_example.sh]]
@@ -83,6 +86,9 @@ Domains:
 
 
 
+
+
+
 2. Contact:
 
    a) Swarm Domain Worker to ensure that all the compontents of 'Swarms' domain are correctly mapped. Point the worker to the correct path in the 'summary.yaml' file. Ensure it creates file called 'swarms.py'.
@@ -131,6 +137,9 @@ def main():
 if __name__ == '__main__':
     main()
 ```
+
+
+
 
 
 4. Run the 'migration_script.py' file to ensure that all the parts of the code are correctly mapped with the command 'python [folder_path]/migration_script.py', but before that user "swarm --base-url http://localhost:5001".
