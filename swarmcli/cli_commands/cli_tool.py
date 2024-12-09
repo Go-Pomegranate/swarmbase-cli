@@ -21,7 +21,11 @@ def tool(ctx):
 @click.option("--name", required=True, help="Name of the tool")
 @click.option("--description", help="Description of the tool")
 @click.option("--version", help="Version of the tool")
-@click.option("--code", help="Code of the tool")
+@click.option(
+    "--code",
+    help="Path to the file containing code of the tool",
+    type=click.Path(exists=True),
+)
 @click.option(
     "--inputs",
     help="Inputs of the tool. Example: {'name': 'first_param', 'type':'str', 'description': 'the first parameter of the funciton'}",
@@ -44,13 +48,16 @@ def create(ctx, name, description, version, code, inputs, outputs, extra_attribu
     logger.debug(
         f"Creating tool with name: {name}, description: {description}, version: {version}, code: {code}, inputs: {inputs}, outputs: {outputs}, extra_attributes: {extra_attributes},",
     )
-
+    with open(code, "r", encoding="utf-8") as code_file:
+        code_file_content = code_file.read()
+    inputs = inputs.replace("'", '"') if inputs else inputs
+    outputs = outputs.replace("'", '"') if outputs else outputs
     swarm_cli = SwarmCLI(ctx.obj["base_url"])
     tool = swarm_cli.create_tool(
         name,
         description,
         version,
-        code,
+        code_file_content,
         inputs,
         outputs,
         extra_attributes,
@@ -93,7 +100,11 @@ def get(ctx, tool_id):
 @click.option("--tool_id", "--id")
 @click.option("--name", required=False, help="New name of the tool")
 @click.option("--description", help="New description of the tool")
-@click.option("--code", help="New code of the tool")
+@click.option(
+    "--code",
+    help="Path to the file containing code of the tool",
+    type=click.Path(exists=True),
+)
 @click.option("--inputs", help="New inputs of the tool")
 @click.option("--outputs", help="New outputs of the tool")
 @click.option("--version", help="New version of the tool")
@@ -120,11 +131,16 @@ def update(
     )
 
     swarm_cli = SwarmCLI(ctx.obj["base_url"])
+    with open(code, "r", encoding="utf-8") as code_file:
+        code_file_content = code_file.read()
+    inputs = inputs.replace("'", '"') if inputs else inputs
+    outputs = outputs.replace("'", '"') if outputs else outputs
+
     update_data = {
         "tool_id": tool_id,
         "name": name,
         "description": description,
-        "code": code,
+        "code": code_file_content,
         "inputs": inputs,
         "outputs": outputs,
         "version": version,

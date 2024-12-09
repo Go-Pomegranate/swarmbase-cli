@@ -125,6 +125,7 @@ def delete(ctx, agent_id) -> None:
     "--relationship",
     type=click.Choice(RelationshipType),
     help="Relationship betwen the agents",
+    default=RelationshipType.SUPERVISES,
 )
 @click.pass_context
 @debug_logging
